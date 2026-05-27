@@ -1,0 +1,204 @@
+  <!DOCTYPE html>
+  <html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="../StyleSheets/main.css">
+    <script src="../Scripts/main.js" defer></script>
+    <script type="module" src="../Scripts/supabase.js"  defer></script>
+  </head>
+  <body>
+    <!-- MENU -->
+  <section class="active" id="menu">
+    <div class="menu-container">
+      <nav class="sidebar" id="sidebar">
+        <a onclick="showMenuContent('menu-home')" class="active">Menu</a>
+        <a onclick="showMenuContent('ongs')">ONGs</a>
+        <a onclick="showMenuContent('usuarios')">Usuários</a>
+        <a onclick="showMenuContent('consulta')">Consulta</a>
+        <a onclick="showMenuContent('acoes')">Ações</a>
+        <a href="../index.html">Sair</a>
+      </nav>
+
+      <main class="main">
+        <!-- A imagem da logo agora é um fundo para a área principal -->
+        <img src="../public/assets/Logo Dourada.png" class="main-bg-logo">
+        <!-- Conteúdo Home do Menu -->
+        <div id="menu-home" class="menu-content active"></div>
+
+        <!-- Conteúdo de Gerenciamento de ONGs -->
+        <div id="ongs" class="menu-content">
+          <h2>Gerenciar ONGs</h2>
+          <div class="ongs-controls">
+            <button class="btn-primary" onclick="showAddOngForm()">Adicionar Nova ONG</button>
+          </div>
+
+          <div id="add-edit-ong-form" class="form-modal" style="display: none;">
+            <h3><span id="ong-form-title">Adicionar</span> ONG</h3>
+            <form onsubmit="event.preventDefault(); saveOng();">
+              <div><label for="ong-nome">Nome da ONG:</label><input type="text" id="ong-nome" required></div>
+              <div><label for="ong-email">E-mail:</label><input type="email" id="ong-email" required></div>
+              <div><label for="ong-cnpj">CNPJ:</label><input type="text" id="ong-cnpj" required></div>
+              <div><label for="ong-telefone">Telefone:</label><input type="tel" id="ong-telefone"></div>
+              <div><label for="ong-endereco">Endereço:</label><input type="text" id="ong-endereco"></div>
+              <div><label for="ong-area">Área de Atuação:</label><input type="text" id="ong-area"></div>
+              <button type="submit" class="btn-primary">Salvar ONG</button>
+              <button type="button" class="btn-secondary" onclick="hideOngForm()">Cancelar</button>
+            </form>
+          </div>
+
+          <div class="dashboard" id="divCardsOngs"> 
+            
+          </div>
+        </div>
+
+        <!-- Conteúdo de Gerenciamento de Usuários -->
+        <div id="usuarios" class="menu-content">
+          <h2>Gerenciar Usuários</h2>
+          <div class="usuarios-controls">
+            <button class="btn-primary" onclick="showAddUserForm()">Adicionar Novo Usuário</button>
+          </div>
+
+          <div id="add-edit-usuario-form" class="form-modal" style="display: none;">
+            <h3><span id="user-form-title">Adicionar</span> Usuário</h3>
+            <form onsubmit="event.preventDefault(); saveUser();">
+              <div><label for="user-form-nome">Nome:</label><input type="text" id="user-form-nome" required></div>
+              <div><label for="user-form-email">E-mail:</label><input type="email" id="user-form-email" required></div>
+              <div><label for="user-form-tipo">Tipo:</label><input type="text" id="user-form-tipo" required></div>
+              <div><label for="user-form-cpf">CPF:</label><input type="text" id="user-form-cpf"></div>
+              <button type="submit" class="btn-primary">Salvar Usuário</button>
+              <button type="button" class="btn-secondary" onclick="hideUserForm()">Cancelar</button>
+            </form>
+          </div>
+
+          <div class="dashboard" id="divCardsUsers">
+            <div class="card">
+              <h3>João da Silva</h3>
+              <p>Email: joao.silva@email.com</p>
+              <p>Tipo: Doador</p>
+              <div class="card-actions">
+                <button class="btn-edit btn-secondary" onclick="editUser('João da Silva')">Editar</button>
+                <button class="btn-delete btn-danger">Excluir</button>
+              </div>
+            </div>
+            <div class="card">
+              <h3>Maria Souza</h3>
+              <p>Email: maria.souza@email.com</p>
+              <p>Tipo: Voluntário</p>
+              <div class="card-actions">
+                <button class="btn-edit btn-secondary" onclick="editUser('Maria Souza')">Editar</button>
+                <button class="btn-delete btn-danger">Excluir</button>
+              </div>
+            </div>
+            <div class="card">
+              <h3>Carlos Oliveira</h3>
+              <p>Email: carlos.o@email.com</p>
+              <p>Tipo: Administrador</p>
+              <div class="card-actions">
+                <button class="btn-edit btn-secondary" onclick="editUser('Carlos Oliveira')">Editar</button>
+                <button class="btn-delete btn-danger">Excluir</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Conteúdo de Consulta -->
+        <div id="consulta" class="menu-content">
+          <h2>Consulta Avançada</h2>
+          <form class="consulta-form" onsubmit="event.preventDefault(); performSearch();">
+            <input type="text" id="search-query" placeholder="Buscar por nome, email, CNPJ, CPF...">
+            <select id="filter-type">
+              <option value="">Todos os Tipos</option>
+              <option value="ong">ONG</option>
+              <option value="usuario">Usuário</option>
+              <option value="acao">Ação</option>
+            </select>
+            <select id="filter-status">
+              <option value="">Todos os Status</option>
+              <option value="ativo">Ativo</option>
+              <option value="inativo">Inativo</option>
+              <option value="concluido">Concluído</option>
+            </select>
+            <button type="submit" class="btn-primary">Buscar</button>
+            <button type="button" class="btn-secondary" onclick="clearFilters()">Limpar Filtros</button>
+          </form>
+          <div id="consulta-results" class="dashboard">
+            <!-- Resultados da consulta serão exibidos aqui -->
+            <div class="card">
+              <h3>Resultado Exemplo 1</h3>
+              <p>Tipo: ONG</p>
+              <p>Descrição: ONG Amigos do Bem - Campanha do Agasalho</p>
+            </div>
+            <div class="card">
+              <h3>Resultado Exemplo 2</h3>
+              <p>Tipo: Usuário</p>
+              <p>Descrição: João da Silva - Doador</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Conteúdo de Ações -->
+        <div id="acoes" class="menu-content">
+          <h2>Gerenciar Ações</h2>
+          <div class="acoes-controls">
+            <button class="btn-primary" onclick="showAddAcaoForm()">Criar Nova Ação</button>
+          </div>
+          <div id="add-edit-acao-form" class="form-modal" style="display: none;">
+            <h3><span id="acao-form-title">Criar</span> Ação</h3>
+            <form onsubmit="event.preventDefault(); saveAcao();">
+              <div><label for="acao-nome">Nome da Ação:</label><input type="text" id="acao-nome" required></div>
+              <div><label for="acao-ong">ONG Responsável:</label><input type="text" id="acao-ong" required></div>
+              <div><label for="acao-status">Status:</label>
+                <select id="acao-status">
+                  <option value="ativa">Ativa</option>
+                  <option value="pendente">Pendente</option>
+                  <option value="concluida">Concluída</option>
+                </select>
+              </div>
+              <div><label for="acao-data-inicio">Data Início:</label><input type="date" id="acao-data-inicio"></div>
+              <div><label for="acao-data-fim">Data Fim:</label><input type="date" id="acao-data-fim"></div>
+              <button type="submit" class="btn-primary">Salvar Ação</button>
+              <button type="button" class="btn-secondary" onclick="hideAcaoForm()">Cancelar</button>
+            </form>
+          </div>
+          <div class="dashboard">
+            <div class="card">
+              <h3>Campanha do Agasalho 2024</h3>
+              <p>ONG: Amigos do Bem</p>
+              <p>Status: Ativa</p>
+              <div class="card-actions">
+                <button class="btn-edit">Ver Detalhes</button>
+                <button class="btn-edit btn-secondary" onclick="editAcao('Campanha do Agasalho 2024')">Editar</button>
+                <button class="btn-delete btn-danger">Excluir</button>
+              </div>
+            </div>
+            <div class="card">
+              <h3>Arrecadação de Alimentos</h3>
+              <p>ONG: Criança Feliz</p>
+              <p>Status: Concluída</p>
+              <div class="card-actions">
+                <button class="btn-edit btn-secondary" onclick="editAcao('Arrecadação de Alimentos')">Editar</button>
+                <button class="btn-delete btn-danger">Excluir</button>
+              </div>
+            </div>
+            <div class="card">
+              <h3>Mutirão de Limpeza</h3>
+              <p>ONG: Mãos Solidárias</p>
+              <p>Status: Pendente</p>
+              <div class="card-actions">
+                <button class="btn-edit btn-secondary" onclick="editAcao('Mutirão de Limpeza')">Ver Detalhes</button>
+                <button class="btn-edit btn-secondary" onclick="editAcao('Mutirão de Limpeza')">Editar</button>
+                <button class="btn-delete btn-danger">Excluir</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </main>
+    </div>
+  </section>
+
+  </body>
+  </html>
+  

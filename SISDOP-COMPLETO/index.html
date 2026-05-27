@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sisdop</title>
+  <link rel="icon" href="./public/assets/Logo Dourada.png">
+  <link rel="stylesheet" href="./StyleSheets/main.css">
+  <script src="https://accounts.google.com/gsi/client" async defer></script>
+</head>
+
+<body>
+
+  <div class="splash" id="splash">
+    <div class="circle"></div>
+    <img src="./public/assets/Logo Dourada.png" alt="Logo SISDOP" class="logo">
+  </div>
+
+  <section id="login" class="active">
+    <div class="logo-container">
+      <img src="./public/assets/Logo Dourada.png" alt="Logo SISDOP">
+    </div>
+
+    <form class="login-container" id="loginBox">
+      <div>
+        <h1>Seja bem-vindo</h1>
+        <p class="subtitle">Efetue seu login</p>
+      </div>
+      <img src="./public/assets/Logo Dourada.png" alt="Logo SISDOP" id="logoTitulo">
+
+      <div class="input-field">
+        <label for="usuario">Usuário:</label>
+        <input type="text" id="usuario" name="usuario" placeholder="Digite seu usuário">
+      </div>
+
+      <div class="input-field">
+        <label for="senha">Senha:</label>
+        <input type="password" id="senha" name="senha" placeholder="Digite sua senha">
+      </div>
+
+      <!-- type="submit" para disparar o handleLogin corretamente -->
+      <button type="submit" class="btn-login btn-primary">Entrar</button>
+
+      <div class="divider">Ou</div>
+
+      <div id="g_id_onload"
+        data-client_id="419883131167-ffkeqm4hbc5a7rlhjb5e4afsqu1ekcdg.apps.googleusercontent.com"
+        data-callback="handleCredentialResponse">
+      </div>
+
+      <div class="g_id_signin"
+        data-type="standard"
+        data-size="large"
+        data-theme="outline"
+        data-text="continue_with"
+        data-shape="pill"
+        data-logo_alignment="left">
+      </div>
+
+      <p class="register-link">Ainda não se cadastrou?
+        <a href="Sections/seleção.html">Cadastre-se agora</a>
+      </p>
+    </form>
+  </section>
+
+  <script src="./Scripts/main.js"></script>
+  <script defer type="module" src="./Scripts/supabase.js"></script>
+</body>
+</html>
