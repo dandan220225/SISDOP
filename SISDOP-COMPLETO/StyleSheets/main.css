@@ -64,7 +64,7 @@ body, html {
 .circle {
   width: 30px;
   height: 30px;
-  background-color: #003811; /* verde vibrante — contrasta com o fundo escuro e com o dourado da logo */
+  background-color: #003811;
   border-radius: 50%;
   position: absolute;
   bottom: 40%;
@@ -103,11 +103,9 @@ section {
   overflow: hidden;
 }
 
-/* --- Fundo base + grade pontilhada + linhas diagonais + gradientes radiais --- */
 #login, #select, #user, #company {
   background-color: var(--green-dark);
   background-image:
-    /* linhas diagonais douradas suaves */
     repeating-linear-gradient(
       -55deg,
       transparent,
@@ -115,21 +113,13 @@ section {
       rgba(200,168,50,0.03) 60px,
       rgba(200,168,50,0.03) 61px
     ),
-    /* grade pontilhada */
     radial-gradient(circle, rgba(255,255,255,0.05) 1px, transparent 1px),
-    /* brilho lateral esquerdo (verde) */
     radial-gradient(ellipse 70% 60% at 10% 55%, rgba(26,122,60,0.22) 0%, transparent 65%),
-    /* brilho canto superior direito (dourado) */
     radial-gradient(ellipse 55% 50% at 90% 10%, rgba(200,168,50,0.07) 0%, transparent 55%),
-    /* sombra canto inferior direito */
     radial-gradient(ellipse 55% 45% at 88% 92%, rgba(10,46,20,0.55)  0%, transparent 65%);
-  background-size:
-    auto,
-    34px 34px,
-    auto, auto, auto;
+  background-size: auto, 34px 34px, auto, auto, auto;
 }
 
-/* --- Círculo grande dourado — canto superior direito --- */
 #login::before, #select::before, #user::before, #company::before {
   content: '';
   position: absolute;
@@ -146,7 +136,6 @@ section {
     0 0 60px rgba(200,168,50,0.04);
 }
 
-/* --- Círculo médio verde + gradiente — canto inferior esquerdo --- */
 #login::after, #select::after, #user::after, #company::after {
   content: '';
   position: absolute;
@@ -562,6 +551,56 @@ form button:hover {
   transform: translateY(-2px);
 }
 
+/* ==================== BOTÕES PRIMÁRIO / SECUNDÁRIO ==================== */
+.btn-primary {
+  background-color: var(--green-light) !important;
+  color: var(--white) !important;
+  border: none !important;
+  padding: 10px 24px !important;
+  border-radius: var(--radius-pill) !important;
+  cursor: pointer !important;
+  font-size: 0.9rem !important;
+  font-weight: 700 !important;
+  box-shadow: 0 4px 20px rgba(26,122,60,0.4) !important;
+  transition: background-color 0.2s, transform 0.15s !important;
+  margin-top: 0 !important;
+  width: auto !important;
+}
+
+.btn-primary:hover {
+  background-color: var(--green-primary) !important;
+  transform: translateY(-2px) !important;
+}
+
+.btn-secondary {
+  background-color: rgba(255,255,255,0.08) !important;
+  color: var(--white) !important;
+  border: 1px solid rgba(255,255,255,0.2) !important;
+  padding: 10px 24px !important;
+  border-radius: var(--radius-pill) !important;
+  cursor: pointer !important;
+  font-size: 0.9rem !important;
+  font-weight: 600 !important;
+  box-shadow: none !important;
+  transition: background-color 0.2s !important;
+  margin-top: 0 !important;
+  width: auto !important;
+}
+
+.btn-secondary:hover {
+  background-color: rgba(255,255,255,0.16) !important;
+}
+
+.btn-danger {
+  background-color: #e53935 !important;
+  color: var(--white) !important;
+  border: none !important;
+}
+
+.btn-danger:hover {
+  background-color: #c62828 !important;
+}
+
 /* ==================== MENU / DASHBOARD ==================== */
 .title-container {
   display: flex;
@@ -636,7 +675,6 @@ form button:hover {
   overflow: hidden;
 }
 
-/* Anel externo dourado — direita */
 .main::before {
   content: '';
   position: absolute;
@@ -651,7 +689,6 @@ form button:hover {
   box-shadow: inset 0 0 60px rgba(200,168,50,0.05);
 }
 
-/* Anel interno + glow verde — direita */
 .main::after {
   content: '';
   position: absolute;
@@ -666,7 +703,6 @@ form button:hover {
   pointer-events: none;
 }
 
-/* Logo de fundo no menu principal */
 .main-bg-logo {
   width: 460px;
   max-width: 80%;
@@ -703,9 +739,60 @@ form button:hover {
   color: var(--white);
 }
 
+/* Controles de seção (botão Adicionar) */
+.ongs-controls,
+.usuarios-controls,
+.acoes-controls {
+  margin-bottom: 1.5rem;
+}
+
+/* ==================== FORM MODAL (ONGs / Usuários) ==================== */
+.form-modal {
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(200,168,50,0.25);
+  border-radius: var(--radius-card);
+  padding: 1.5rem 2rem;
+  margin-bottom: 2rem;
+  backdrop-filter: blur(8px);
+}
+
+.form-modal h3 {
+  color: var(--gold-light);
+  font-size: 1rem;
+  font-weight: 700;
+  margin-bottom: 1rem;
+}
+
+.form-modal form {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  gap: 12px;
+  align-items: flex-end;
+  justify-content: flex-start;
+  padding: 0;
+  max-width: 100%;
+}
+
+.form-modal form > div {
+  display: flex;
+  flex-direction: column;
+  min-width: 180px;
+  max-width: 260px;
+  flex: 1;
+}
+
+.form-modal form button {
+  margin-top: 0;
+  padding: 11px 24px;
+  width: auto;
+  flex-shrink: 0;
+}
+
+/* ==================== DASHBOARD CARDS ==================== */
 .dashboard {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
   gap: 1.5rem;
 }
 
@@ -741,20 +828,24 @@ form button:hover {
   margin-top: 1rem;
   display: flex;
   gap: 10px;
+  flex-wrap: wrap;
 }
 
 .card-actions button {
-  padding: 8px 14px;
+  padding: 7px 14px;
   border: none;
   border-radius: 8px;
   cursor: pointer;
   color: white;
   font-weight: 600;
   font-size: 0.82rem;
-  transition: opacity 0.2s;
+  transition: opacity 0.2s, transform 0.15s;
 }
 
-.card-actions button:hover { opacity: 0.82; }
+.card-actions button:hover {
+  opacity: 0.85;
+  transform: translateY(-1px);
+}
 
 .btn-edit   { background-color: #2196F3; }
 .btn-delete { background-color: #e53935; }
@@ -762,6 +853,87 @@ form button:hover {
 @keyframes fadeInContent {
   from { opacity: 0; transform: translateY(12px); }
   to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ==================== FORMULÁRIO INLINE PRODUTOS ==================== */
+.produtos-form-inline {
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(200,168,50,0.25);
+  border-radius: var(--radius-card);
+  padding: 1.5rem 2rem;
+  margin-bottom: 2rem;
+  backdrop-filter: blur(8px);
+}
+
+.produtos-form-inline h3 {
+  color: var(--gold-light);
+  font-size: 1rem;
+  font-weight: 700;
+  margin-bottom: 1rem;
+  letter-spacing: 0.02em;
+}
+
+.produtos-form-inline form {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  gap: 12px;
+  align-items: flex-end;
+  justify-content: flex-start;
+  padding: 0;
+  max-width: 100%;
+}
+
+.produtos-form-inline form > div {
+  display: flex;
+  flex-direction: column;
+  min-width: 180px;
+  max-width: 240px;
+  flex: 1;
+}
+
+.produtos-form-inline form button {
+  margin-top: 0;
+  padding: 11px 24px;
+  width: auto;
+  flex-shrink: 0;
+}
+
+/* ==================== CONSULTA ==================== */
+.consulta-form {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  align-items: center;
+  margin-bottom: 1.5rem;
+  padding: 0;
+  max-width: 100%;
+}
+
+.consulta-form input,
+.consulta-form select {
+  padding: 10px 16px;
+  border-radius: var(--radius-pill);
+  border: 1px solid rgba(255,255,255,0.2);
+  background: rgba(255,255,255,0.07);
+  color: var(--white);
+  outline: none;
+  font-size: 0.9rem;
+  transition: border-color 0.25s;
+}
+
+.consulta-form input { flex: 1; min-width: 200px; }
+.consulta-form select { min-width: 160px; }
+
+.consulta-form input:focus,
+.consulta-form select:focus {
+  border-color: var(--gold);
+  box-shadow: 0 0 0 3px rgba(200,168,50,0.2);
+}
+
+.consulta-form select option {
+  background-color: var(--green-dark);
+  color: var(--white);
 }
 
 /* ==================== SCROLLBAR CUSTOMIZADA ==================== */
@@ -785,6 +957,10 @@ form button:hover {
   .option .icon { width: 120px; height: 120px; }
   .icon svg { width: 60px; height: 60px; }
   .sidebar { width: 155px; }
+  .form-modal form,
+  .produtos-form-inline form { flex-direction: column; }
+  .form-modal form > div,
+  .produtos-form-inline form > div { max-width: 100%; }
 }
 
 @media (max-width: 600px) {
@@ -810,6 +986,12 @@ form button:hover {
   }
   .main img { width: 280px; }
   .main::before, .main::after { display: none; }
+  .menu-content { padding: 1.2rem; }
+  .dashboard { grid-template-columns: 1fr; }
+  .produtos-form-inline { padding: 1.2rem; }
+  .consulta-form { flex-direction: column; }
+  .consulta-form input,
+  .consulta-form select { width: 100%; }
 }
 
 @media (max-width: 400px) {
