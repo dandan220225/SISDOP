@@ -13,15 +13,31 @@
   <section id="company">
     <img src="../public/assets/Logo Dourada.png" class="logo-main">
     <a href="seleção.html"><button class="btn-voltar btn-secondary">Voltar</button></a>
-    
+
+    <div class="cadastro-container">
+      <div class="cadastro-imagem" style="background-image: url('https://via.placeholder.com/600x800/000000/FFFFFF?text=ONG');"></div>
       <div class="cadastro-form">
         <h2 class="titulo-cadastro">Cadastro de Empresa:</h2>
-        <form id="formCadastroEmpresas" onsubmit="(e) => handleFormSubmit(e)">
-          <div><label for="company-nome">Nome da ONG:</label><input type="text" id="company-nome" name="nome" required></div>
-          <div><label for="company-email">E-mail:</label><input type="email" id="company-email" name="email" required></div>
-          <div><label for="company-cnpj">CNPJ:</label><input type="text" id="company-cnpj" name="cnpj" required></div>
-          <div><label for="company-celular">Número de celular:</label><input type="tel" id="company-celular" name="tel" required></div>
-          <div class="password-field-group"><label>Senha:</label>
+        <!-- onsubmit removido daqui — o listener é registrado via setEventListeners() no supabase.js -->
+        <form id="formCadastroEmpresas">
+          <div>
+            <label for="company-nome">Nome da ONG:</label>
+            <input type="text" id="company-nome" name="nome" required>
+          </div>
+          <div>
+            <label for="company-email">E-mail:</label>
+            <input type="email" id="company-email" name="email" required>
+          </div>
+          <div>
+            <label for="company-cnpj">CNPJ:</label>
+            <input type="text" id="company-cnpj" name="cnpj" required>
+          </div>
+          <div>
+            <label for="company-celular">Número de celular:</label>
+            <input type="tel" id="company-celular" name="tel" required>
+          </div>
+          <div class="password-field-group">
+            <label>Senha:</label>
             <div class="password-wrapper">
               <input type="password" id="company-senha" name="senha" required>
               <span class="toggle-password" onclick="togglePasswordVisibility(this)">
@@ -30,7 +46,8 @@
               </span>
             </div>
           </div>
-          <div class="password-field-group"><label>Confirme sua senha:</label>
+          <div class="password-field-group">
+            <label>Confirme sua senha:</label>
             <div class="password-wrapper">
               <input type="password" id="company-confirma-senha" required>
               <span class="toggle-password" onclick="togglePasswordVisibility(this)">
@@ -39,9 +56,14 @@
               </span>
             </div>
           </div>
-          <div id="areaAtuação"><label for="company-nome">Area de atuação:</label><input type="text" id="area" name="area" required></div>
+          <div>
+            <label for="area">Área de atuação:</label>
+            <input type="text" id="area" name="area" required>
+          </div>
           <button class="btn-primary" type="submit">Cadastrar</button>
         </form>
+      </div>
     </div>
   </section>
 </body>
+</html>

@@ -5,6 +5,67 @@ let editingOngId     = null
 let editingUserId    = null
 let editingProdutoId = null
 
+// ===================== VALIDAÇÕES =====================
+
+function validarCPF(cpf) {
+  cpf = cpf.replace(/\D/g, '')
+  if (cpf.length !== 11 || /^(\d)\1+$/.test(cpf)) return false
+
+  let soma = 0
+  for (let i = 0; i < 9; i++) soma += parseInt(cpf[i]) * (10 - i)
+  let digito1 = (soma * 10) % 11
+  if (digito1 === 10 || digito1 === 11) digito1 = 0
+  if (digito1 !== parseInt(cpf[9])) return false
+
+  soma = 0
+  for (let i = 0; i < 10; i++) soma += parseInt(cpf[i]) * (11 - i)
+  let digito2 = (soma * 10) % 11
+  if (digito2 === 10 || digito2 === 11) digito2 = 0
+  return digito2 === parseInt(cpf[10])
+}
+
+function validarCNPJ(cnpj) {
+  cnpj = cnpj.replace(/\D/g, '')
+  if (cnpj.length !== 14 || /^(\d)\1+$/.test(cnpj)) return false
+
+  const calcDigito = (cnpj, pesos) => {
+    const soma = cnpj.split('').slice(0, pesos.length)
+      .reduce((acc, d, i) => acc + parseInt(d) * pesos[i], 0)
+    const resto = soma % 11
+    return resto < 2 ? 0 : 11 - resto
+  }
+
+  const pesos1 = [5, 4, 3, 2, 9, 8, 7, 6, 5, 4, 3, 2]
+  const pesos2 = [6, 5, 4, 3, 2, 9, 8, 7, 6, 5, 4, 3, 2]
+
+  return calcDigito(cnpj, pesos1) === parseInt(cnpj[12]) &&
+         calcDigito(cnpj, pesos2) === parseInt(cnpj[13])
+}
+
+function validarTelefone(telefone) {
+  const digits = telefone.replace(/\D/g, '')
+
+  if (digits.length !== 10 && digits.length !== 11) return false
+
+  const ddd = parseInt(digits.substring(0, 2))
+  const dddsValidos = [
+    11,12,13,14,15,16,17,18,19,
+    21,22,24,27,28,
+    31,32,33,34,35,37,38,
+    41,42,43,44,45,46,47,48,49,
+    51,53,54,55,
+    61,62,63,64,65,66,67,68,69,
+    71,73,74,75,77,79,
+    81,82,83,84,85,86,87,88,89,
+    91,92,93,94,95,96,97,98,99
+  ]
+  if (!dddsValidos.includes(ddd)) return false
+
+  if (digits.length === 11 && digits[2] !== '9') return false
+
+  return true
+}
+
 // ===================== ONGs =====================
 
 async function getOngsUpdateHtml() {
@@ -54,6 +115,16 @@ async function saveOng() {
   const cnpj     = document.querySelector('#ong-cnpj').value
   const telefone = document.querySelector('#ong-telefone').value
   const area     = document.querySelector('#ong-area').value
+
+  if (cnpj && !validarCNPJ(cnpj)) {
+    alert('CNPJ inválido. Verifique os dígitos informados.')
+    return
+  }
+
+  if (telefone && !validarTelefone(telefone)) {
+    alert('Telefone inválido. Use DDD + número (ex: 81999998888).')
+    return
+  }
 
   if (editingOngId) {
     const { error } = await supabase
@@ -148,6 +219,11 @@ async function saveUser() {
   const tipo  = document.querySelector('#user-form-tipo').value
   const cpf   = document.querySelector('#user-form-cpf').value
 
+  if (cpf && !validarCPF(cpf)) {
+    alert('CPF inválido. Verifique os dígitos informados.')
+    return
+  }
+
   if (editingUserId) {
     const { error } = await supabase
       .from('usuarios')
@@ -221,7 +297,6 @@ async function getProdutosUpdateHtml() {
   data.forEach(element => listaProdutos.appendChild(renderProdutoCard(element)))
 }
 
-// Realtime: escuta INSERT, UPDATE e DELETE na tabela produtos
 function subscribeProdutosRealtime() {
   const listaProdutos = document.querySelector("#divCardsProdutos")
   if (!listaProdutos) return
@@ -264,21 +339,19 @@ async function editProduto(id) {
 }
 
 async function saveProduto() {
-  console.log('saveProduto chamado, editingProdutoId:', editingProdutoId)
-
   const nome          = document.querySelector('#produto-nome')?.value?.trim()
   const quantidade    = parseInt(document.querySelector('#produto-quantidade')?.value)
   const data_validade = document.querySelector('#produto-validade')?.value
-
-  console.log('Dados:', { nome, quantidade, data_validade })
 
   if (!nome || !quantidade || !data_validade) {
     alert('Preencha todos os campos obrigatórios')
     return
   }
 
+  const normalizarNome = (str) =>
+    str.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase().trim()
+
   if (editingProdutoId) {
-    // Edição direta — apenas atualiza
     const { error } = await supabase
       .from('produtos')
       .update({ nome, quantidade, data_validade })
@@ -286,7 +359,6 @@ async function saveProduto() {
 
     if (error) { console.error('Erro update:', error); alert('Erro: ' + error.message); return }
 
-    // Atualiza o card imediatamente no DOM
     const cardEditado = document.querySelector(`#divCardsProdutos [data-id="${editingProdutoId}"]`)
     if (cardEditado) {
       cardEditado.replaceWith(renderProdutoCard({ id: editingProdutoId, nome, quantidade, data_validade }))
@@ -295,41 +367,39 @@ async function saveProduto() {
 
     alert(`Produto "${nome}" atualizado com sucesso!`)
   } else {
-    // Verifica se já existe produto com o mesmo nome (case-insensitive)
-    const { data: existing, error: fetchError } = await supabase
+    const { data: todos, error: fetchError } = await supabase
       .from('produtos')
       .select('*')
-      .ilike('nome', nome)
 
-    if (fetchError) { console.error('Erro ao buscar produto:', fetchError); return }
+    if (fetchError) { console.error('Erro ao buscar produtos:', fetchError); return }
 
-    if (existing && existing.length > 0) {
-      // Produto já existe — acumula quantidade
-      const prod    = existing[0]
-      const novaQtd = prod.quantidade + quantidade
+    const nomeNorm = normalizarNome(nome)
+    const match = todos?.find(p =>
+      normalizarNome(p.nome) === nomeNorm &&
+      p.data_validade === data_validade
+    )
+
+    if (match) {
+      const novaQtd = match.quantidade + quantidade
       const { error } = await supabase
         .from('produtos')
         .update({ quantidade: novaQtd })
-        .eq('id', prod.id)
+        .eq('id', match.id)
 
       if (error) { console.error('Erro ao acumular quantidade:', error); alert('Erro: ' + error.message); return }
 
-      // Atualiza o card existente imediatamente no DOM
-      const cardExistente = document.querySelector(`#divCardsProdutos [data-id="${prod.id}"]`)
-      if (cardExistente) cardExistente.replaceWith(renderProdutoCard({ ...prod, quantidade: novaQtd }))
+      const cardExistente = document.querySelector(`#divCardsProdutos [data-id="${match.id}"]`)
+      if (cardExistente) cardExistente.replaceWith(renderProdutoCard({ ...match, quantidade: novaQtd }))
 
-      alert(`Quantidade de "${nome}" atualizada para ${novaQtd}!`)
+      alert(`Quantidade de "${match.nome}" atualizada para ${novaQtd}!`)
     } else {
-      // Produto novo — insere normalmente
       const { data, error } = await supabase
         .from('produtos')
         .insert([{ nome, quantidade, data_validade }])
         .select()
 
-      console.log('Resultado insert:', data, error)
       if (error) { console.error('Erro insert:', error); alert('Erro: ' + error.message); return }
 
-      // Adiciona o card imediatamente no DOM
       const listaProdutos = document.querySelector("#divCardsProdutos")
       if (listaProdutos && data && data[0]) {
         listaProdutos.appendChild(renderProdutoCard(data[0]))
@@ -369,13 +439,11 @@ async function removeProduto(id) {
 
   if (error) { console.error(error); return }
 
-  // Remove o card imediatamente do DOM sem depender do realtime
   const card = document.querySelector(`#divCardsProdutos [data-id="${id}"]`)
   if (card) card.remove()
 
   alert(`Produto "${data.nome}" removido com sucesso`)
 }
-
 
 // ===================== AÇÕES =====================
 
@@ -439,7 +507,6 @@ async function saveAcao() {
 
     if (error) { console.error('Erro update:', error); alert('Erro: ' + error.message); return }
 
-    // Atualiza o card imediatamente no DOM
     const cardEditado = document.querySelector(`#divCardsAcoes [data-id="${editingAcaoId}"]`)
     if (cardEditado) {
       cardEditado.replaceWith(renderAcaoCard({ id: editingAcaoId, data_realizada, local, total_produtos }))
@@ -455,7 +522,6 @@ async function saveAcao() {
 
     if (error) { console.error('Erro insert:', error); alert('Erro: ' + error.message); return }
 
-    // Adiciona o card imediatamente no DOM
     const listaAcoes = document.querySelector("#divCardsAcoes")
     if (listaAcoes && data && data[0]) {
       listaAcoes.appendChild(renderAcaoCard(data[0]))
@@ -525,6 +591,105 @@ async function handleLogin(e) {
   window.location.href = 'Sections/menu.html'
 }
 
+// ===================== CADASTRO PÚBLICO — EMPRESA =====================
+
+async function handleCadastroEmpresa(e) {
+  e.preventDefault()
+
+  const nome     = document.querySelector('#company-nome')?.value?.trim()
+  const email    = document.querySelector('#company-email')?.value?.trim()
+  const cnpj     = document.querySelector('#company-cnpj')?.value?.trim()
+  const telefone = document.querySelector('#company-celular')?.value?.trim()
+  const area     = document.querySelector('#area')?.value?.trim()
+  const senha    = document.querySelector('#company-senha')?.value
+  const confirma = document.querySelector('#company-confirma-senha')?.value
+
+  if (!nome || !email || !cnpj || !telefone || !area || !senha) {
+    alert('Preencha todos os campos obrigatórios.')
+    return
+  }
+
+  if (!validarCNPJ(cnpj)) {
+    alert('CNPJ inválido. Verifique os dígitos informados.')
+    return
+  }
+
+  if (!validarTelefone(telefone)) {
+    alert('Telefone inválido. Use DDD + número (ex: 81999998888).')
+    return
+  }
+
+  if (senha !== confirma) {
+    alert('As senhas não coincidem!')
+    return
+  }
+
+  const { error } = await supabase
+    .from('empresas')
+    .insert([{ nome, email, cnpj, telefone, area, senha }])
+    .select()
+
+  if (error) {
+    console.error('Erro Supabase:', JSON.stringify(error))
+    alert('Erro ao cadastrar empresa: ' + error.message)
+    return
+  }
+
+  alert(`Empresa "${nome}" cadastrada com sucesso!`)
+  document.querySelector('#formCadastroEmpresas').reset()
+}
+
+// ===================== CADASTRO PÚBLICO — USUÁRIO =====================
+
+async function handleCadastroUsuario(e) {
+  e.preventDefault()
+
+  const nome      = document.querySelector('#user-nome')?.value?.trim()
+  const sobrenome = document.querySelector('#user-sobrenome')?.value?.trim()
+  const email     = document.querySelector('#user-email')?.value?.trim()
+  const telefone  = document.querySelector('#user-celular')?.value?.trim()
+  const tipo      = document.querySelector('#user-tipo')?.value?.trim()
+  const cpf       = document.querySelector('#user-cpf')?.value?.trim()
+  const senha     = document.querySelector('#user-senha')?.value
+  const confirma  = document.querySelector('#user-confirma-senha')?.value
+
+  if (!nome || !sobrenome || !email || !telefone || !tipo || !cpf || !senha) {
+    alert('Preencha todos os campos obrigatórios.')
+    return
+  }
+
+  if (!validarCPF(cpf)) {
+    alert('CPF inválido. Verifique os dígitos informados.')
+    return
+  }
+
+  if (!validarTelefone(telefone)) {
+    alert('Telefone inválido. Use DDD + número (ex: 81999998888).')
+    return
+  }
+
+  if (senha !== confirma) {
+    alert('As senhas não coincidem!')
+    return
+  }
+
+  const nomeCompleto = `${nome} ${sobrenome}`
+
+  const { error } = await supabase
+    .from('usuarios')
+    .insert([{ nome: nomeCompleto, email, telefone, tipo, cpf, senha }])
+    .select()
+
+  if (error) {
+    console.error('Erro Supabase:', JSON.stringify(error))
+    alert('Erro ao cadastrar usuário: ' + error.message)
+    return
+  }
+
+  alert(`Usuário "${nomeCompleto}" cadastrado com sucesso!`)
+  document.querySelector('#formCadastroUsuarios').reset()
+}
+
 // ===================== EVENT LISTENERS =====================
 
 function setEventListeners() {
@@ -574,9 +739,15 @@ function setEventListeners() {
 
   const formLogin = document.querySelector("#loginBox")
   if (formLogin) formLogin.addEventListener("submit", handleLogin)
+
+  const formEmpresa = document.querySelector("#formCadastroEmpresas")
+  if (formEmpresa) formEmpresa.addEventListener("submit", handleCadastroEmpresa)
+
+  const formUsuario = document.querySelector("#formCadastroUsuarios")
+  if (formUsuario) formUsuario.addEventListener("submit", handleCadastroUsuario)
 }
 
-// ===================== EXPOSIÇÃO GLOBAL (imediata) =====================
+// ===================== EXPOSIÇÃO GLOBAL =====================
 
 Object.assign(window, {
   showAddOngForm,

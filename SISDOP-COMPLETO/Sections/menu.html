@@ -12,12 +12,24 @@
   <section class="active" id="menu">
     <div class="menu-container">
       <nav class="sidebar" id="sidebar">
-        <a onclick="showMenuContent('menu-home')" class="active">Menu</a>
-        <a onclick="showMenuContent('ongs')">ONGs</a>
-        <a onclick="showMenuContent('usuarios')">Usuários</a>
-        <a onclick="showMenuContent('produtos')">Produtos</a>
-        <a onclick="showMenuContent('acoes')">Ações</a>
-        <a href="../index.html">Sair</a>
+        <a onclick="toggleSidebar()" class="active" id="btn-menu" title="Menu">
+          <span class="hamburger">&#9776;</span><span class="sidebar-label"> Menu</span>
+        </a>
+        <a onclick="showMenuContent('ongs')" title="ONGs">
+          <span class="sidebar-icon">🤝</span><span class="sidebar-label">ONGs</span>
+        </a>
+        <a onclick="showMenuContent('usuarios')" title="Usuários">
+          <span class="sidebar-icon">👤</span><span class="sidebar-label">Usuários</span>
+        </a>
+        <a onclick="showMenuContent('produtos')" title="Produtos">
+          <span class="sidebar-icon">📦</span><span class="sidebar-label">Produtos</span>
+        </a>
+        <a onclick="showMenuContent('acoes')" title="Ações">
+          <span class="sidebar-icon">⚡</span><span class="sidebar-label">Ações</span>
+        </a>
+        <a href="../index.html" title="Sair">
+          <span class="sidebar-icon">🚪</span><span class="sidebar-label">Sair</span>
+        </a>
       </nav>
 
       <main class="main">

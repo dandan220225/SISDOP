@@ -616,15 +616,18 @@ form button:hover {
   flex-direction: row;
 }
 
+/* ==================== SIDEBAR & TOGGLE ==================== */
 .sidebar {
-  overflow: auto;
+  overflow: hidden;
   width: 190px;
+  min-width: 190px;
   background-color: var(--green-deep);
   border-right: 1px solid rgba(255,255,255,0.08);
   display: flex;
   flex-direction: column;
   align-items: flex-start;
   padding: 24px 12px;
+  transition: width 0.3s ease, min-width 0.3s ease, padding 0.3s ease;
 }
 
 .sidebar a {
@@ -640,6 +643,11 @@ form button:hover {
   transition: background-color 0.2s, color 0.2s;
   cursor: pointer;
   letter-spacing: 0.01em;
+  white-space: nowrap;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  gap: 8px;
 }
 
 .sidebar a:hover {
@@ -653,6 +661,57 @@ form button:hover {
   box-shadow: 0 4px 12px rgba(26,122,60,0.4);
 }
 
+/* Ícone hambúrguer */
+.hamburger {
+  font-size: 1.1rem;
+  flex-shrink: 0;
+  line-height: 1;
+}
+
+/* Ícone de cada item da sidebar */
+.sidebar-icon {
+  flex-shrink: 0;
+  font-size: 1rem;
+  width: 20px;
+  text-align: center;
+  display: none; /* oculto quando expandido */
+}
+
+/* Label de texto dos itens da sidebar */
+.sidebar-label {
+  transition: opacity 0.2s ease, width 0.2s ease;
+  opacity: 1;
+}
+
+/* Estado colapsado */
+.sidebar.collapsed {
+  width: 52px;
+  min-width: 52px;
+  padding: 24px 6px;
+}
+
+.sidebar.collapsed .sidebar-label {
+  opacity: 0;
+  width: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.sidebar.collapsed .sidebar-icon {
+  display: block;
+}
+
+.sidebar.collapsed a {
+  justify-content: center;
+  padding: 10px 0;
+  gap: 0;
+}
+
+/* No estado expandido, esconde o ícone e mostra o hambúrguer só no btn-menu */
+.sidebar:not(.collapsed) .sidebar-icon { display: none; }
+.sidebar:not(.collapsed) #btn-menu .hamburger { display: inline; }
+
+/* ==================== MAIN ==================== */
 .main {
   flex: 1;
   background-color: var(--green-dark);
@@ -956,7 +1015,8 @@ form button:hover {
   .login-container { width: clamp(270px, 78vw, 380px); padding: 26px 22px; }
   .option .icon { width: 120px; height: 120px; }
   .icon svg { width: 60px; height: 60px; }
-  .sidebar { width: 155px; }
+  .sidebar { width: 155px; min-width: 155px; }
+  .sidebar.collapsed { width: 52px; min-width: 52px; }
   .form-modal form,
   .produtos-form-inline form { flex-direction: column; }
   .form-modal form > div,
@@ -971,19 +1031,31 @@ form button:hover {
   .menu-container { flex-direction: column; }
   .sidebar {
     overflow: auto;
-    width: 100%;
+    width: 100% !important;
+    min-width: 100% !important;
     flex-direction: row;
     justify-content: space-around;
     border-right: none;
     border-bottom: 1px solid rgba(255,255,255,0.08);
     padding: 10px 8px;
+    transition: none;
+  }
+  .sidebar.collapsed {
+    width: 100% !important;
+    min-width: 100% !important;
   }
   .sidebar a {
     margin: 4px 0;
     text-align: center;
     padding: 6px 10px;
     font-size: 0.78rem;
+    justify-content: center;
   }
+  .sidebar .sidebar-label {
+    opacity: 1 !important;
+    pointer-events: auto !important;
+  }
+  .hamburger { display: none; }
   .main img { width: 280px; }
   .main::before, .main::after { display: none; }
   .menu-content { padding: 1.2rem; }

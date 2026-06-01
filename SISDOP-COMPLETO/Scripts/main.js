@@ -29,6 +29,12 @@ function showMenuContent(contentId) {
   });
 }
 
+// Toggle da sidebar (abrir/fechar)
+function toggleSidebar() {
+  const sidebar = document.getElementById('sidebar');
+  sidebar.classList.toggle('collapsed');
+}
+
 // MOSTRAR/ESCONDER SENHA
 function togglePasswordVisibility(icon) {
   const wrapper = icon.parentElement;
